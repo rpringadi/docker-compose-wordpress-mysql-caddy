@@ -1,0 +1,6 @@
+.env
+**/*.bak
+
+# VSCode
+.vscode/
+*.code-workspace
