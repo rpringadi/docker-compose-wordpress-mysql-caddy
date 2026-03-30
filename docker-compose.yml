@@ -1,0 +1,56 @@
+# 🐳 Docker Compose: WordPress + MySQL + Caddy
+# 🚀 Quick WordPress stack with automatic HTTPS via Caddy
+
+services:
+  # 📝 WordPress — the CMS itself
+  wordpress:
+    image: wordpress:6.9
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # 🗄️ MySQL — database backend
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🔒 Caddy — reverse proxy with automatic HTTPS
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - wordpress
+
+volumes:
+  wordpress:
+  db_data:
+  caddy_data:
+  caddy_config:
