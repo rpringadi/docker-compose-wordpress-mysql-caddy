@@ -1,43 +1,53 @@
-# 🐳 Docker Compose: WordPress + MySQL + Caddy
-# 🚀 Quick WordPress stack with automatic HTTPS via Caddy
+# Docker Compose: WordPress + MySQL + Caddy
+# Quick WordPress stack with automatic HTTPS via Caddy
 
 services:
-  # 📝 WordPress — the CMS itself
+  # WordPress — the CMS itself
   wordpress:
     image: wordpress:6.9
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - wordpress:/var/www/html
+      - ./wordpress:/var/www/html
+    networks:
+      - wordpress
     depends_on:
       db:
         condition: service_healthy
 
-  # 🗄️ MySQL — database backend
+  # MySQL — database backend
   db:
     image: mysql:8.4
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
+    networks:
+      - wordpress
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 🔒 Caddy — reverse proxy with automatic HTTPS
+  # Caddy — reverse proxy with automatic HTTPS
   caddy:
     image: caddy:2
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - "80:80"
       - "443:443"
@@ -46,11 +56,16 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - wordpress
     depends_on:
       - wordpress
 
-volumes:
+networks:
   wordpress:
-  db_data:
+    name: wp-wordpress
+    driver: bridge
+
+volumes:
   caddy_data:
   caddy_config:

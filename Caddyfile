@@ -1,5 +1,5 @@
-# 🌐 Caddy reverse proxy config
-# 🔒 Automatic HTTPS via Let's Encrypt
+# Caddy reverse proxy config
 {$DOMAIN} {
+	tls internal
 	reverse_proxy wordpress:80
 }
