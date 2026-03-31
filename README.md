@@ -97,6 +97,27 @@ docker compose down
 docker compose down -v
 ```
 
+## 📎 Appendix
+
+### Trusting Caddy's Local CA (remove browser certificate warning)
+
+When using a local domain (e.g. via `/etc/hosts`), the Caddyfile uses `tls internal` which generates a self-signed certificate. Browsers will show a warning because the cert isn't signed by a public CA.
+
+To permanently suppress the warning, trust Caddy's local root CA on your machine:
+
+**macOS:**
+```bash
+# Extract Caddy's root CA cert
+docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt ./caddy_local_ca.crt
+
+# Trust it system-wide
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./caddy_local_ca.crt
+```
+
+Restart your browser after running the commands. The warning will not appear again for any site using `tls internal` on this machine.
+
+> This is only needed for local development. On a real server with a public domain, remove `tls internal` from the Caddyfile and Caddy will obtain a trusted certificate from Let's Encrypt automatically.
+
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
