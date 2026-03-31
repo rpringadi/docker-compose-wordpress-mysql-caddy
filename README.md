@@ -55,6 +55,8 @@ A quick and easy way to spin up a WordPress site with MySQL and Caddy for automa
 ├── .env.example        # 🔑 Environment variable template
 ├── Caddyfile           # 🌐 Caddy reverse proxy configuration
 ├── docker-compose.yml  # 🐳 Docker Compose service definitions
+├── wordpress/          # 📝 WordPress files (created on first run)
+├── db_data/            # 🗄️ MySQL data (created on first run)
 └── README.md
 ```
 
@@ -72,12 +74,12 @@ A quick and easy way to spin up a WordPress site with MySQL and Caddy for automa
 
 ### 💾 Volumes
 
-| Volume         | Description                          |
-|----------------|--------------------------------------|
-| `wordpress`    | 📝 WordPress files (`/var/www/html`) |
-| `db_data`      | 🗄️ MySQL data (`/var/lib/mysql`)     |
-| `caddy_data`   | 🔒 Caddy TLS certificates and data  |
-| `caddy_config` | ⚙️ Caddy configuration               |
+| Volume         | Type        | Description                          |
+|----------------|-------------|--------------------------------------|
+| `./wordpress`  | Local folder | 📝 WordPress files (`/var/www/html`) |
+| `./db_data`    | Local folder | 🗄️ MySQL data (`/var/lib/mysql`)     |
+| `caddy_data`   | Named volume | 🔒 Caddy TLS certificates and data  |
+| `caddy_config` | Named volume | ⚙️ Caddy configuration               |
 
 ## 🛠️ Useful Commands
 

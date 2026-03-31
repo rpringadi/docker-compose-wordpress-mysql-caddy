@@ -1,6 +1,10 @@
 .env
 **/*.bak
 
+# Local bind mounts
+wordpress/
+db_data/
+
 # VSCode
 .vscode/
 *.code-workspace
