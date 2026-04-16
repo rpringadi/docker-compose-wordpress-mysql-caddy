@@ -1,10 +1,41 @@
-# Docker Compose: WordPress + MySQL + Caddy
+# Docker Compose: WordPress 5.9 + MySQL + Caddy
 # Quick WordPress stack with automatic HTTPS via Caddy
+#
+# ── Running v6.9 and v5.9 side-by-side ──────────────────────────────
+#
+# Each version lives on its own git branch with separate ports,
+# network, and domain so the two stacks don't collide.
+#
+#   Branch main (v6.9)         Branch wordpress-5.9 (v5.9)
+#   ───────────────────        ────────────────────────────
+#   Ports: 80 / 443            Ports: 8080 / 8443
+#   Domain: wptesterx.com      Domain: wptesterx59.com
+#   Network: wp-wordpress       Network: wp-wordpress-59
+#
+# Step 1 — Start v6.9 first (uses standard HTTP/HTTPS ports):
+#   git checkout main
+#   docker compose -p wp69 up -d
+#
+# Step 2 — Start v5.9 (uses alternate ports):
+#   git checkout wordpress-5.9
+#   docker compose -p wp59 up -d
+#
+# Step 3 — Add both domains to /etc/hosts:
+#   127.0.0.1  wptesterx.com wptesterx59.com
+#
+# Access:
+#   v6.9 → https://wptesterx.com
+#   v5.9 → https://wptesterx59.com:8443
+#
+# To tear down:
+#   docker compose -p wp69 down
+#   docker compose -p wp59 down
+# ─────────────────────────────────────────────────────────────────────
 
 services:
-  # WordPress — the CMS itself
+  # WordPress 5.9 — the CMS itself
   wordpress:
-    image: wordpress:6.9
+    image: wordpress:5.9.3
     restart: unless-stopped
     env_file:
       - .env
@@ -14,7 +45,7 @@ services:
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - ./wordpress:/var/www/html
+      - ./wordpress-59:/var/www/html
     networks:
       - wordpress
     depends_on:
@@ -33,7 +64,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - ./db_data:/var/lib/mysql
+      - ./db_data-59:/var/lib/mysql
     networks:
       - wordpress
     healthcheck:
@@ -49,9 +80,9 @@ services:
     env_file:
       - .env
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "8080:80"
+      - "8443:443"
+      - "8443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
@@ -63,7 +94,7 @@ services:
 
 networks:
   wordpress:
-    name: wp-wordpress
+    name: wp-wordpress-59
     driver: bridge
 
 volumes:
