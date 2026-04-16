@@ -8,3 +8,6 @@ db_data/
 # VSCode
 .vscode/
 *.code-workspace
+
+# AI tools
+.claude/
