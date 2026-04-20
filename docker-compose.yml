@@ -6,22 +6,25 @@
 # Each version lives on its own git branch with separate ports,
 # network, and domain so the two stacks don't collide.
 #
-#   Branch main (v6.9)         Branch wordpress-5.9 (v5.9)
-#   ───────────────────        ────────────────────────────
-#   Ports: 80 / 443            Ports: 8080 / 8443
-#   Domain: wptesterx.com      Domain: wptesterx59.com
-#   Network: wp-wordpress       Network: wp-wordpress-59
+#   Branch wordpress-6.9 (v6.9)  Branch wordpress-5.9 (v5.9)
+#   ────────────────────────────  ────────────────────────────
+#   Ports: 80 / 443              Ports: 8080 / 8443
+#   SFTP port: 2222              SFTP port: 2223
+#   Domain: wptesterx.com        Domain: wptesterx59.com
+#   Env file: .env.wp-6.9        Env file: .env.wp-5.9
+#   Network: wp-wordpress-69     Network: wp-wordpress-59
 #
 # Step 1 — Start v6.9 first (uses standard HTTP/HTTPS ports):
-#   git checkout main
+#   git checkout wordpress-6.9
 #   docker compose -p wp69 up -d
 #
 # Step 2 — Start v5.9 (uses alternate ports):
 #   git checkout wordpress-5.9
 #   docker compose -p wp59 up -d
 #
-# Step 3 — Add both domains to /etc/hosts:
-#   127.0.0.1  wptesterx.com wptesterx59.com
+# Step 3 — Add both domains to /etc/hosts (each on its own line):
+#   127.0.0.1  wptesterx.com
+#   127.0.0.1  wptesterx59.com
 #
 # Access:
 #   v6.9 → https://wptesterx.com
@@ -38,7 +41,7 @@ services:
     image: wordpress:5.9.3
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-5.9
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
@@ -51,13 +54,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # MySQL — database backend
   db:
     image: mysql:8.4
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-5.9
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -78,7 +86,7 @@ services:
     image: caddy:2
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-5.9
     ports:
       - "8080:80"
       - "8443:443"
@@ -90,7 +98,23 @@ services:
     networks:
       - wordpress
     depends_on:
+      wordpress:
+        condition: service_healthy
+
+  # SFTP — file access to wp-content (themes, plugins, uploads)
+  sftp:
+    image: atmoz/sftp
+    restart: unless-stopped
+    ports:
+      - "2223:22"
+    volumes:
+      - ./wordpress-59/wp-content:/home/${SFTP_USER}/wp-content
+    networks:
       - wordpress
+    command: "${SFTP_USER}:${SFTP_PASSWORD}:33:33:wp-content"
+    depends_on:
+      wordpress:
+        condition: service_healthy
 
 networks:
   wordpress:

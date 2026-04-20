@@ -1,9 +1,12 @@
 .env
+.env.wp-*
 **/*.bak
 
 # Local bind mounts
 wordpress/
+wordpress-*/
 db_data/
+db_data-*/
 
 # VSCode
 .vscode/
