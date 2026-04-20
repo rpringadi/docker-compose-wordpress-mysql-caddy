@@ -9,7 +9,9 @@
 #   Branch wordpress-6.9 (v6.9)  Branch wordpress-5.9 (v5.9)
 #   ────────────────────────────  ────────────────────────────
 #   Ports: 80 / 443              Ports: 8080 / 8443
+#   SFTP port: 2222              SFTP port: 2223
 #   Domain: wptesterx.com        Domain: wptesterx59.com
+#   Env file: .env.wp-6.9        Env file: .env.wp-5.9
 #   Network: wp-wordpress-69     Network: wp-wordpress-59
 #
 # Step 1 — Start v6.9 first (uses standard HTTP/HTTPS ports):
@@ -20,8 +22,9 @@
 #   git checkout wordpress-5.9
 #   docker compose -p wp59 up -d
 #
-# Step 3 — Add both domains to /etc/hosts:
-#   127.0.0.1  wptesterx.com wptesterx59.com
+# Step 3 — Add both domains to /etc/hosts (each on its own line):
+#   127.0.0.1  wptesterx.com
+#   127.0.0.1  wptesterx59.com
 #
 # Access:
 #   v6.9 → https://wptesterx.com
@@ -38,7 +41,7 @@ services:
     image: wordpress:6.9
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-6.9
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
@@ -62,7 +65,7 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-6.9
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -83,7 +86,7 @@ services:
     image: caddy:2
     restart: unless-stopped
     env_file:
-      - .env
+      - .env.wp-6.9
     ports:
       - "80:80"
       - "443:443"
