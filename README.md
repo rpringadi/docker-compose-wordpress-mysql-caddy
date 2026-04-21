@@ -56,7 +56,7 @@ GID=$(id -g) docker compose -p wp69 --env-file .env.wp-6.9 up -d
 3. ✏️ Edit `.env.wp-6.9` with your values:
 
    ```bash
-   DOMAIN=wptesterx69.com
+   DOMAIN=wptesterx.com
    MYSQL_ROOT_PASSWORD=change-me-root
    MYSQL_DATABASE=wordpress
    MYSQL_USER=wordpress
@@ -88,7 +88,7 @@ GID=$(id -g) docker compose -p wp69 --env-file .env.wp-6.9 up -d
    > docker compose config
    > ```
 
-5. 🎉 Visit `https://wptesterx59.com` and complete the WordPress installation wizard.
+5. 🎉 Visit `https://wptesterx.com` and complete the WordPress installation wizard.
 
 ## 🗂️ Project Structure
 
@@ -109,7 +109,7 @@ GID=$(id -g) docker compose -p wp69 --env-file .env.wp-6.9 up -d
 
 | Variable              | Description                        | Default     |
 |-----------------------|------------------------------------|-------------|
-| `DOMAIN`              | 🌐 Your domain name               | example.com |
+| `DOMAIN`              | 🌐 Your domain name               | wptesterx.com |
 | `MYSQL_ROOT_PASSWORD` | 🔐 MySQL root password             | —           |
 | `MYSQL_DATABASE`      | 🗄️ WordPress database name         | wordpress   |
 | `MYSQL_USER`          | 👤 WordPress database user          | wordpress   |
