@@ -77,6 +77,17 @@ GID=$(id -g) docker compose -p wp69 --env-file .env.wp-6.9 up -d
    > CLI flag is required for that. See
    > [Docker docs — Variable interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/).
 
+   > **💡 Tip:** Use `docker compose config` to verify that all variables are
+   > resolved correctly before starting the stack:
+   >
+   > ```bash
+   > # Should show fully resolved values (no ${VAR} placeholders)
+   > docker compose --env-file .env.wp-6.9 config
+   >
+   > # Without --env-file, you'll see warnings about unset variables
+   > docker compose config
+   > ```
+
 5. 🎉 Visit `https://your-domain.com` and complete the WordPress installation wizard.
 
 ## 🗂️ Project Structure
