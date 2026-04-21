@@ -1,4 +1,15 @@
 # Caddy reverse proxy config
+
+# Serve plain HTTP (handy during local development)
+http://{$DOMAIN} {
+	reverse_proxy wordpress:80
+}
+
+# To force HTTPS instead, comment the block above and uncomment this one:
+# http://{$DOMAIN} {
+# 	redir https://{$DOMAIN}{uri} permanent
+# }
+
 {$DOMAIN} {
 	tls internal
 	reverse_proxy wordpress:80
