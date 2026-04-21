@@ -16,6 +16,28 @@ A quick and easy way to spin up a WordPress site with MySQL and Caddy for automa
 - [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed
 - 🌐 A domain name pointing to your server's IP address (required for automatic HTTPS)
 
+### 🐧 Linux Users — File Permissions
+
+On macOS, Docker Desktop handles file ownership transparently. On **Linux**, the
+MySQL container runs as UID `999` (the `mysql` user inside the container), so the
+`db_data-*` directory will be owned by that UID on your host. To avoid permission
+issues, export your user's GID before starting the stack:
+
+```bash
+# Add to your .bashrc / .zshrc for convenience
+export DOCKER_GID=$(id -g)
+```
+
+Or prepend it to the start command:
+
+```bash
+GID=$(id -g) docker compose -p wp69 --env-file .env.wp-6.9 up -d
+```
+
+> **Note:** The `wordpress-69/` directory is written by Apache (UID `33` /
+> `www-data`). If you need to edit WordPress files as your host user, run:
+> `sudo chown -R $(id -u):$(id -g) wordpress-69/`
+
 ## ⚡ Quick Start
 
 1. Clone the repository:
@@ -46,8 +68,25 @@ A quick and easy way to spin up a WordPress site with MySQL and Caddy for automa
 4. 🏁 Start the stack:
 
    ```bash
-   docker compose -p wp69 up -d
+   docker compose -p wp69 --env-file .env.wp-6.9 up -d
    ```
+
+   > **Why `--env-file`?** The `env_file:` directive in `docker-compose.yml` only
+   > injects variables into containers at runtime. It does **not** make them
+   > available for `${VAR}` substitution in the compose file itself. The `--env-file`
+   > CLI flag is required for that. See
+   > [Docker docs — Variable interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/).
+
+   > **💡 Tip:** Use `docker compose config` to verify that all variables are
+   > resolved correctly before starting the stack:
+   >
+   > ```bash
+   > # Should show fully resolved values (no ${VAR} placeholders)
+   > docker compose --env-file .env.wp-6.9 config
+   >
+   > # Without --env-file, you'll see warnings about unset variables
+   > docker compose config
+   > ```
 
 5. 🎉 Visit `https://your-domain.com` and complete the WordPress installation wizard.
 
@@ -91,7 +130,7 @@ A quick and easy way to spin up a WordPress site with MySQL and Caddy for automa
 
 ```bash
 # ▶️ Start the stack
-docker compose -p wp69 up -d
+docker compose -p wp69 --env-file .env.wp-6.9 up -d
 
 # 📋 View logs
 docker compose -p wp69 logs -f
@@ -128,13 +167,13 @@ and env file so the two stacks don't collide.
 **Step 2** — Start v6.9 first (uses standard HTTP/HTTPS ports):
 ```bash
 git checkout wordpress-6.9
-docker compose -p wp69 up -d
+docker compose -p wp69 --env-file .env.wp-6.9 up -d
 ```
 
 **Step 3** — Start v5.9 (uses alternate ports):
 ```bash
 git checkout wordpress-5.9
-docker compose -p wp59 up -d
+docker compose -p wp59 --env-file .env.wp-5.9 up -d
 ```
 
 **Access:**
