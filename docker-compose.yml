@@ -16,11 +16,11 @@
 #
 # Step 1 — Start v6.9 first (uses standard HTTP/HTTPS ports):
 #   git checkout wordpress-6.9
-#   docker compose -p wp69 up -d
+#   docker compose -p wp69 --env-file .env.wp-6.9 up -d
 #
 # Step 2 — Start v5.9 (uses alternate ports):
 #   git checkout wordpress-5.9
-#   docker compose -p wp59 up -d
+#   docker compose -p wp59 --env-file .env.wp-5.9 up -d
 #
 # Step 3 — Add both domains to /etc/hosts (each on its own line):
 #   127.0.0.1  wptesterx.com
