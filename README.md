@@ -142,7 +142,7 @@ docker compose -p wp69 down
 docker compose -p wp69 down -v
 
 # 📂 Connect via SFTP
-sftp -P 2222 wpadmin@localhost
+sftp -P 2233 wpadmin@localhost
 ```
 
 ## 🔀 Running v6.9 and v5.9 side-by-side
@@ -153,7 +153,7 @@ and env file so the two stacks don't collide.
 | | Branch `wordpress-6.9` (v6.9) | Branch `wordpress-5.9` (v5.9) |
 |---|---|---|
 | Ports | 80 / 443 | 8080 / 8443 |
-| SFTP port | 2222 | 2223 |
+| SFTP port | 2233 | 2223 |
 | Domain | wptesterx.com | wptesterx59.com |
 | Env file | `.env.wp-6.9` | `.env.wp-5.9` |
 | Network | wp-wordpress-69 | wp-wordpress-59 |

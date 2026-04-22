@@ -72,7 +72,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - ./db_data-69:/var/lib/mysql
+      - db_data-69:/var/lib/mysql
     networks:
       - wordpress
     healthcheck:
@@ -106,7 +106,7 @@ services:
     image: atmoz/sftp
     restart: unless-stopped
     ports:
-      - "2222:22"
+      - "2233:22"
     volumes:
       - ./wordpress-69/wp-content:/home/${SFTP_USER}/wp-content
     networks:
@@ -124,3 +124,4 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  db_data-69:
